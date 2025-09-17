@@ -6,7 +6,7 @@ import TodoFunction from "./components/Todo-Function.js";
 export default function App() {
   return (
 <div>
-      <h1>Day 4 – React fundamentals</h1>
+      <h1>Day 5 – React Lifecycle and hooks</h1>
       {/* <JsPlayground /> */}
       <TodoClass />
       <hr />

@@ -1,46 +1,75 @@
-import React, { Component } from "react";
-
-class TodoClass extends Component {
-  constructor(props) {
+import React, { Component, useState, useEffect } from "react";
+import TodoFunction from "./Todo-Function";
+import useWindowSize from "./custom-hook"
+// class TodoClass extends Component {
+  /*constructor(props) {
     super(props);
     this.state = {
       todos: [],
       inputValue: ""
     };
-  }
+  }*/
+function TodoFunc() {
+  const [todos, setTodos] = useState([]);
+  const [inputValue, setInputValue] = useState("");
+  const [count, setCount] = useState(0);  
 
-  handleChange = (e) => {
-    this.setState({ inputValue: e.target.value });
+  ////--------------------------------using custom hook         
+  const windowSize = useWindowSize(); 
+  
+
+  const handleChange = (e) => {
+    setInputValue(e.target.value); 
+  };
+  const addTodo = () => {
+    if (inputValue.trim() === "") return;
+
+    setTodos((prev) => [...prev, inputValue]); 
+    setInputValue("");
   };
 
-  addTodo = () => {
-    if (this.state.inputValue.trim() === "") return;
-    this.setState((prev) => ({
-      todos: [...prev.todos, prev.inputValue],  // still not getting, focus on this!
-      inputValue: ""
-    }));
-  };
 
-  render() {
+////------------------Timer with useEffect
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCount((prev) => prev + 1);
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const removeTodo = (indexToRemove) => {
+  const newTodos = todos.filter((todo, index) => {
+    return index !== indexToRemove;
+  });
+  setTodos(newTodos);
+};
     return (
       <div>
-        <h2>Class based Component Todo</h2>
+        <h2>Class based Component transpiled into function based Component</h2>
+              <h2>Todos (Window: {windowSize.width} x {windowSize.height})</h2>
+      <p>Timer: {count} secs</p>
+            <p>📏 Window size: {windowSize.width} x {windowSize.height}</p>
         <input
           type="text"
-          value={this.state.inputValue}
-          onChange={this.handleChange}
+          value={inputValue}
+          onChange={handleChange}
           placeholder="Add a todo"
         />
-        <button onClick={this.addTodo}>Add</button>
+        <button onClick={addTodo}>Add</button>
 
         <ul>
-          {this.state.todos.map((todo, index) => (
-            <li key={index}>{todo}</li>
+          {todos.map((todo, index) => (
+            <li key={index}>{todo} {" "}
+            <button onClick = {() =>
+              removeTodo(index)
+            }> remove dis </button>
+            </li> //used map cuz why not 
           ))}
         </ul>
       </div>
     );
   }
-}
 
-export default TodoClass;
+
+export default TodoFunc;

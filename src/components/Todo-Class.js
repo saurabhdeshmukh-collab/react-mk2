@@ -1,75 +1,49 @@
-import React, { Component, useState, useEffect } from "react";
-import TodoFunction from "./Todo-Function";
-import useWindowSize from "./custom-hook"
-// class TodoClass extends Component {
-  /*constructor(props) {
-    super(props);
-    this.state = {
-      todos: [],
-      inputValue: ""
-    };
-  }*/
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { addTodo, removeTodo } from "../redux/store";
+import { useTheme } from "./ThemeContext";
+
 function TodoFunc() {
-  const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  const [count, setCount] = useState(0);  
+  const todos = useSelector((state) => state.todos);
+  const dispatch = useDispatch();
+  const { theme, toggleTheme } = useTheme();
 
-  ////--------------------------------using custom hook         
-  const windowSize = useWindowSize(); 
-  
+  const handleChange = (e) => setInputValue(e.target.value);
 
-  const handleChange = (e) => {
-    setInputValue(e.target.value); 
-  };
-  const addTodo = () => {
+  const handleAdd = () => {
     if (inputValue.trim() === "") return;
-
-    setTodos((prev) => [...prev, inputValue]); 
+    dispatch(addTodo(inputValue));
     setInputValue("");
   };
 
+  const handleRemove = (index) => {
+    dispatch(removeTodo(index));
+  };
 
-////------------------Timer with useEffect
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCount((prev) => prev + 1);
-    }, 1000);
+  return (
+    <div>
+      <h2>Todos (Theme: {theme})</h2>
+      <button onClick={toggleTheme}>Toggle Theme</button>
 
-    return () => clearInterval(intervalId);
-  }, []);
+      <input
+        type="text"
+        value={inputValue}
+        onChange={handleChange}
+        placeholder="Add a todo"
+      />
+      <button onClick={handleAdd}>Add</button>
 
-  const removeTodo = (indexToRemove) => {
-  const newTodos = todos.filter((todo, index) => {
-    return index !== indexToRemove;
-  });
-  setTodos(newTodos);
-};
-    return (
-      <div>
-        <h2>Class based Component transpiled into function based Component</h2>
-              <h2>Todos (Window: {windowSize.width} x {windowSize.height})</h2>
-      <p>Timer: {count} secs</p>
-            <p>📏 Window size: {windowSize.width} x {windowSize.height}</p>
-        <input
-          type="text"
-          value={inputValue}
-          onChange={handleChange}
-          placeholder="Add a todo"
-        />
-        <button onClick={addTodo}>Add</button>
-
-        <ul>
-          {todos.map((todo, index) => (
-            <li key={index}>{todo} {" "}
-            <button onClick = {() =>
-              removeTodo(index)
-            }> remove dis </button>
-            </li> //used map cuz why not 
-          ))}
-        </ul>
-      </div>
-    );
-  }
-
+      <ul>
+        {todos.map((todo, index) => (
+          <li key={index}>
+            {todo}{" "}
+            <button onClick={() => handleRemove(index)}>Remove</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default TodoFunc;
